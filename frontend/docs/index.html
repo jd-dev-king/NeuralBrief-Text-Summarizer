@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="NeuralBrief extractive text summarization interface."
+    >
+
+    <title>NeuralBrief | Text Summarizer</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="background-grid"></div>
+    <div class="background-glow glow-one"></div>
+    <div class="background-glow glow-two"></div>
+
+    <main class="app-shell">
+        <header class="topbar">
+            <div class="brand-group">
+                <div class="brand-icon" aria-hidden="true">
+                    NB
+                </div>
+
+                <div>
+                    <p class="eyebrow">Extractive Intelligence System</p>
+                    <h1>NeuralBrief</h1>
+                </div>
+            </div>
+
+            <div class="system-status">
+                <span
+                    id="statusDot"
+                    class="status-dot status-checking"
+                    aria-hidden="true"
+                ></span>
+
+                <div>
+                    <span class="status-label">API Status</span>
+                    <strong id="apiStatusText">Checking...</strong>
+                </div>
+            </div>
+        </header>
+
+        <section class="hero-section">
+            <div>
+                <span class="section-tag">NLP Processing Console</span>
+
+                <h2>
+                    Condense long documents into focused,
+                    readable summaries.
+                </h2>
+
+                <p>
+                    Paste an article or upload a TXT, DOCX, or PDF file.
+                    NeuralBrief uses Gensim-powered extractive ranking to
+                    retain the most important original sentences.
+                </p>
+            </div>
+
+            <div class="hero-metrics">
+                <article class="hero-metric">
+                    <span>Default Retention</span>
+                    <strong>20%</strong>
+                </article>
+
+                <article class="hero-metric">
+                    <span>Supported Files</span>
+                    <strong>3</strong>
+                </article>
+
+                <article class="hero-metric">
+                    <span>Authentication</span>
+                    <strong>None</strong>
+                </article>
+            </div>
+        </section>
+
+        <section class="workspace-grid">
+            <article class="panel source-panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-index">01</span>
+                        <h3>Source Input</h3>
+                    </div>
+
+                    <button
+                        id="clearButton"
+                        class="button button-ghost"
+                        type="button"
+                    >
+                        Clear
+                    </button>
+                </div>
+
+                <div class="input-mode-row">
+                    <button
+                        id="pasteModeButton"
+                        class="mode-button active"
+                        type="button"
+                    >
+                        Paste Text
+                    </button>
+
+                    <button
+                        id="uploadModeButton"
+                        class="mode-button"
+                        type="button"
+                    >
+                        Upload Document
+                    </button>
+                </div>
+
+                <div id="pastePanel" class="input-panel active">
+                    <label for="sourceText" class="field-label">
+                        Article or document text
+                    </label>
+
+                    <textarea
+                        id="sourceText"
+                        placeholder="Paste a long article, report, or document here..."
+                        spellcheck="true"
+                    ></textarea>
+
+                    <div class="text-counter-row">
+                        <span>
+                            <strong id="sourceWordCount">0</strong>
+                            words
+                        </span>
+
+                        <span>
+                            <strong id="sourceCharacterCount">0</strong>
+                            characters
+                        </span>
+                    </div>
+                </div>
+
+                <div id="uploadPanel" class="input-panel">
+                    <input
+                        id="fileInput"
+                        type="file"
+                        accept=".txt,.docx,.pdf"
+                        hidden
+                    >
+
+                    <div
+                        id="dropZone"
+                        class="drop-zone"
+                        role="button"
+                        tabindex="0"
+                        aria-label="Upload TXT, DOCX, or PDF document"
+                    >
+                        <div class="upload-symbol" aria-hidden="true">
+                            ↑
+                        </div>
+
+                        <h4>Drop a document into the processing zone</h4>
+
+                        <p>
+                            Or select a file from your computer.
+                        </p>
+
+                        <button
+                            id="browseButton"
+                            class="button button-secondary"
+                            type="button"
+                        >
+                            Browse Files
+                        </button>
+
+                        <span class="supported-files">
+                            TXT · DOCX · PDF · Maximum 10 MB
+                        </span>
+                    </div>
+
+                    <div
+                        id="selectedFileCard"
+                        class="selected-file-card hidden"
+                    >
+                        <div>
+                            <span class="file-type-indicator">FILE</span>
+
+                            <div>
+                                <strong id="selectedFileName">
+                                    No file selected
+                                </strong>
+
+                                <span id="selectedFileSize">
+                                    0 KB
+                                </span>
+                            </div>
+                        </div>
+
+                        <button
+                            id="removeFileButton"
+                            class="icon-button"
+                            type="button"
+                            aria-label="Remove selected file"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+
+                <div class="configuration-section">
+                    <div class="configuration-heading">
+                        <div>
+                            <span class="panel-index">02</span>
+                            <h3>Summary Configuration</h3>
+                        </div>
+                    </div>
+
+                    <div class="ratio-control">
+                        <div class="ratio-heading">
+                            <label for="ratioSlider">
+                                Sentence retention
+                            </label>
+
+                            <output id="ratioOutput" for="ratioSlider">
+                                20%
+                            </output>
+                        </div>
+
+                        <input
+                            id="ratioSlider"
+                            type="range"
+                            min="10"
+                            max="50"
+                            step="5"
+                            value="20"
+                        >
+
+                        <div class="ratio-scale">
+                            <span>10% concise</span>
+                            <span>50% detailed</span>
+                        </div>
+                    </div>
+
+                    <button
+                        id="summarizeButton"
+                        class="button button-primary summarize-button"
+                        type="button"
+                    >
+                        <span class="button-icon" aria-hidden="true">⚡</span>
+                        Generate Summary
+                    </button>
+
+                    <p id="inputMessage" class="inline-message"></p>
+                </div>
+            </article>
+
+            <article class="panel results-panel">
+                <div class="panel-header">
+                    <div>
+                        <span class="panel-index">03</span>
+                        <h3>Generated Summary</h3>
+                    </div>
+
+                    <div class="result-actions">
+                        <button
+                            id="copyButton"
+                            class="button button-ghost"
+                            type="button"
+                            disabled
+                        >
+                            Copy
+                        </button>
+
+                        <button
+                            id="downloadButton"
+                            class="button button-ghost"
+                            type="button"
+                            disabled
+                        >
+                            Download
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultPlaceholder" class="result-placeholder">
+                    <div class="result-placeholder-icon" aria-hidden="true">
+                        ◈
+                    </div>
+
+                    <h4>Summary output is ready for processing</h4>
+
+                    <p>
+                        Enter source text or upload a supported document,
+                        then select Generate Summary.
+                    </p>
+                </div>
+
+                <div id="resultContent" class="result-content hidden">
+                    <div class="summary-display">
+                        <p id="summaryText"></p>
+                    </div>
+
+                    <div class="statistics-grid">
+                        <article class="stat-card">
+                            <span>Original Words</span>
+                            <strong id="originalWordsStat">0</strong>
+                        </article>
+
+                        <article class="stat-card">
+                            <span>Summary Words</span>
+                            <strong id="summaryWordsStat">0</strong>
+                        </article>
+
+                        <article class="stat-card">
+                            <span>Sentences Retained</span>
+                            <strong id="sentencesStat">0 / 0</strong>
+                        </article>
+
+                        <article class="stat-card">
+                            <span>Output Length</span>
+                            <strong id="compressionStat">0%</strong>
+                        </article>
+
+                        <article class="stat-card full-stat">
+                            <span>Processing Time</span>
+                            <strong id="processingTimeStat">0.000 sec</strong>
+                        </article>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="system-strip">
+            <div>
+                <span class="strip-label">Engine</span>
+                <strong>Gensim TF-IDF + PageRank</strong>
+            </div>
+
+            <div>
+                <span class="strip-label">Processing</span>
+                <strong>Extractive Summarization</strong>
+            </div>
+
+            <div>
+                <span class="strip-label">Privacy</span>
+                <strong>No Account Required</strong>
+            </div>
+
+            <div>
+                <span class="strip-label">Version</span>
+                <strong>1.0.0</strong>
+            </div>
+        </section>
+
+        <footer>
+            <p>
+                NeuralBrief Text Summarizer · Python · Flask · Gensim
+            </p>
+        </footer>
+    </main>
+
+    <div
+        id="loadingOverlay"
+        class="loading-overlay hidden"
+        aria-live="polite"
+    >
+        <div class="loading-card">
+            <div class="scanner">
+                <span></span>
+            </div>
+
+            <h3>Analyzing source document</h3>
+
+            <p>
+                Ranking sentences and generating the extractive summary...
+            </p>
+        </div>
+    </div>
+
+    <div
+        id="toast"
+        class="toast"
+        role="status"
+        aria-live="polite"
+    ></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
